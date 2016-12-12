@@ -15,6 +15,7 @@ Running as script with positional args:
 import os
 import sys
 import json
+import logging
 from multiprocessing import Pool, cpu_count
 
 import catmaid_analysis
@@ -66,7 +67,13 @@ def mask_missing(arr, zres=60.):
     return marr
 
 
-def smoothTracing(trace, zres=None, firstpos=None):
+def array_pathlength(arr):
+    return sum([numpy.linalg.norm(arr[obsidx] - obs)
+                for obsidx, obs in enumerate(arr[1:])])
+
+
+def smoothTracing(trace, zres=None, firstpos=None, use_missing=True,
+                  fix_applicate=False, QC='noQC'):
     '''
     This function takes an arbitrary list of 3d points and inserts
         masked states (missing measurements) until all states are sequential.
@@ -75,13 +82,24 @@ def smoothTracing(trace, zres=None, firstpos=None):
     if zres is None:
         zres = 60.
     zs = trace[:, 2].copy()
-    arr = mask_missing(trace)
+    arr = mask_missing(trace) if use_missing else trace
     states = smoothKalman(arr, initstate=firstpos)[0]
-    states = states[~arr.mask[:, 0]]
-    states[:, 2] = zs
-    return states
+    states = states[~arr.mask[:, 0]] if use_missing else states
+    if fix_applicate:
+        states[:, 2] = zs
+
+    if QC == 'strictLT':
+        if (array_pathlength(states) >= array_pathlength(trace)):
+            logging.debug('found neurite with {} nodes which '
+                          'was smoothed unsuccessfully.'.format(len(trace)))
+            return trace
+        else:
+            return states
+    else:
+        return states
 
 
+# TODO this does not need to generate a skeleton so explicitly....
 def updateNodePosition(neu, posdict):
     nodelist, connectors = [], []
     for nid in neu.nodes.keys():
@@ -230,11 +248,23 @@ def do_smooth(inp):
 class NeuronSmoother:
     # TODO replace "z" res with arbitrary dim
     '''NeuronSmoother to handle kalman smoothing parameters'''
-    def __init__(self, zres, its=4, bifurc_interp_consider=(3, 8)):
+    def __init__(self, zres, its=4, bifurc_interp_consider=(3, 8),
+                 use_missing=True, fix_applicate=False, QC=None):
         self.iterations = its
         self.zres = zres
         self.minbifurc = min(bifurc_interp_consider)
         self.maxbifurc = max(bifurc_interp_consider)
+
+        self.fix_applicate = fix_applicate  # TODO implement this for other axes
+        self.use_missing = use_missing
+
+        if QC is None:
+            QC = 'noQC'
+        if QC not in ['noQC', 'strictLT']:
+            logging.warning('{} is unknown QC mode.  Using "noQC"'.format(QC))
+            self.QC = 'noQC'
+        else:
+            self.QC = QC
 
     def smooth(self, neuron):
         '''
@@ -252,8 +282,10 @@ class NeuronSmoother:
             neuritepts = node_array(neuron, neurite)
             neuritepts[0] = bifurcs[neurite[0]]
             neuritepts[-1] = bifurcs[neurite[-1]]
-            smoothneurites.append(smoothTracing(neuritepts, zres=self.zres,
-                                                firstpos=None))
+            smoothneurites.append(smoothTracing(
+                neuritepts, zres=self.zres, firstpos=None,
+                use_missing=self.use_missing, fix_applicate=self.fix_applicate,
+                QC=self.QC))
             smoothpos = smoothneurites[-1]
             smoothednodes.update({nid: smoothpos[i]
                                   for i, nid in enumerate(neurite)})
@@ -270,7 +302,10 @@ if __name__ == "__main__":
     If run as a script, smooths a catmaid server source and outputs to a file
     '''
     catmaid_source = sys.argv[1]
-    outdir = sys.argv[2]
+    try:
+        outdir = sys.argv[2]
+    except IndexError:
+        os.getcwd()
     try:
         NoProcs = sys.argv[3]
     except IndexError:
