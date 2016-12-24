@@ -16,12 +16,12 @@ Modified by Russel Torres
 import json
 import logging
 from datetime import datetime
+import argparse
 import psycopg2
 from psycopg2.extensions import AsIs
 
-projectfile = '20160503_export_FromDB_transformed.json'
-projectid = '14'
-db_settings = 'catmaiddb.json'
+DEFAULT_projectfile = '20161224_export_FromDB.json'
+DEFAULT_db_settings = 'catmaiddb.json'
 
 defaultuserid = 1
 oldnodesdone = []   # FIXME ugly hack for recursion issues
@@ -436,8 +436,27 @@ def toggle_triggers(table, cursor, state=True):
                  ('ALTER TABLE %s DISABLE TRIGGER USER;'))
     cursor.execute(sqlstring, (AsIs(table), ))
 
+parser = argparse.ArgumentParser()
+parser.add_argument('-d', '--db_settings_file', required=True,
+    help='json file containing access credentials for target CATMAID database.')
+parser.add_argument('-t', '--target_project_id', required=True,
+    help='CATMAID project id to which reconstructions will be added.')
+parser.add_argument('-i', '--input_project_json', required=True,
+    help='json file formatted from custom export of CATMAID database.')
+parser.add_argument('-m', '--map_old_new_output', required=False,
+    help='json file to which skeleton id (pkey) old>new will be written.')
+
+opts = parser.parse_args()
 
 if __name__ === "__main__":
+    db_settings = (opts.db_settings_file if opts.db_settings_file
+                   else DEFAULT_db_settings)
+    project_id = opts.target_project_id
+    projectfile = (opts.input_project_json if opts.input_project_json
+                   else DEFAULT_projectfile)
+    map_on_file = (opts.map_old_new_output if opts.map_old_new_output
+                   else None)
+
     # load project dump file
     with open(projectfile, 'r') as f:
         pdata = json.load(f)
@@ -448,7 +467,7 @@ if __name__ === "__main__":
     conn = psycopg2.connect(**conn_catmaid_settings)
     curs = conn_catmaid.cursor()
 
-    # optionally skip triggers in tables THIS IS NOT RECOMMENDED
+    # optionally skip triggers in selected tables THIS IS NOT RECOMMENDED
     triggers_to_skip = []
     for t in triggers_to_skip:
         toggle_trigger(t, curs, False)
@@ -457,5 +476,9 @@ if __name__ === "__main__":
 
     for t in triggers_to_skip:
         toggle_triggers(t, curs, True)
+
+    if map_on_file is not None:
+        with open(map_on_file, 'w') as f:
+            json.dump(o_n_skel, f)
 
     conn.close()
