@@ -18,4 +18,4 @@ See our [example Jupyter notebook.](notebooks/smoothed_pathlength.ipynb)
 It is possible to use [a Python script](sql/import_dataset.py) to add Hildebrand16 reconstructions to another [configured](http://catmaid.readthedocs.io/en/stable/installation.html) CATMAID project.  Although primary keys are not retained, other properties (names, annotations, creation and edition data, etc.) are, and could be used to link datasets.
 
 ## Further Expansion
-CATMAID has functionality beyond the simple skeleton GET requests used in this example allowing for intricate graph-based connectivity and morphology analysis.  Please look at the [CATMAID swagger doc]('http://hildebrand16.neurodata.io/catmaid/apis') for usage examples.
+CATMAID has functionality beyond the simple skeleton GET requests used in this example allowing for intricate graph-based connectivity and morphology analysis.  Please look at the [CATMAID swagger doc](http://hildebrand16.neurodata.io/catmaid/apis) for usage examples.
