@@ -122,7 +122,8 @@ def unique_neurites(neu, base=None):
     neurites = []
     for leaf in neu.leaves:
         path = networkx.shortest_path(neu.graph, base, leaf)
-        branchinpath = set(path).intersection(set(neu.bifurcations))
+        branchinpath = set(path).intersection(
+            set(neu.bifurcations).union(set([base])))
         bpargs = [path.index(bp) for bp in branchinpath]
         for bparg in sorted(bpargs, reverse=True):
             neurites.append(path[bparg:])
