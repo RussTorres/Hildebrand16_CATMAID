@@ -245,11 +245,20 @@ def do_smooth(inp):
     NS.smoothtoFile(neuron, fn)
 
 
+def smooth_neuron(n, zres=60., its=4, bifurc_interp_consider=(3, 8),
+                  use_missing=True, fix_applicate=True, QC=None, alg='kalman'):
+    '''wraps options to make NeuronSmoother object and apply to single neuron'''
+    ns = NeuronSmoother(zres, its, bifurc_interp_consider,
+                        use_missing, fix_applicate, QC, alg)
+    return ns.smooth(n)
+
+
 class NeuronSmoother:
     # TODO replace "z" res with arbitrary dim
+    # TODO reimplement gaussian
     '''NeuronSmoother to handle kalman smoothing parameters'''
     def __init__(self, zres, its=4, bifurc_interp_consider=(3, 8),
-                 use_missing=True, fix_applicate=False, QC=None):
+                 use_missing=True, fix_applicate=False, QC=None, alg='kalman'):
         self.iterations = its
         self.zres = zres
         self.minbifurc = min(bifurc_interp_consider)
