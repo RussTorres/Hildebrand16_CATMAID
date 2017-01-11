@@ -12,7 +12,7 @@ Important analysis functionality has been included in the [morphology module](ca
 
 ## Kalman-filter based neurite smoothing
 Residuals due to tracing and alignment errors can add up significantly in near-isotropic EM reconstruction datasets.  Quality of reconstructions can be improved using a kalman smoother on individual neurites (implemented using the [pykalman](https://github.com/pykalman/pykalman) library.)
-See our [example Jupyter notebook.](notebooks/smoothed_pathlength.ipynb)
+See our [example Jupyter notebook.](notebooks/smoothed_pathlengths.ipynb)
 
 ## Copy the Hildebrand16 annotations to your own CATMAID database
 It is possible to use [a Python script](sql/import_dataset.py) to add Hildebrand16 reconstructions to another [configured](http://catmaid.readthedocs.io/en/stable/installation.html) CATMAID project.  Although primary keys are not retained, other properties (names, annotations, creation and edition data, etc.) are, and could be used to link datasets.
