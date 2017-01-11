@@ -2,7 +2,7 @@
 Simplified CATMAID analysis examples for [Hildebrand et al. public dataset](https://neurodata.io/data/hildebrand16/).
 
 
-Originally developed as part of the catmaid_utils package for [Brett Graham](https://github.com/braingram), [Wei-Chung Lee](https://github.com/wclee), and [David G.C. Hildebrand](https://github.com/davidhildebrand)
+Originally developed as part of the [catmaid_utils](https://github.com/htem/catmaid_tools) package for [Brett Graham](https://github.com/braingram), [Wei-Chung Lee](https://github.com/wclee), and [David G.C. Hildebrand](https://github.com/davidhildebrand)
 For use with [CATMAID](https://github.com/catmaid/CATMAID) software by [Albert Cardona](https://github.com/acardona), [Stephan Saalfeld](https://github.com/axtimwalde), [Andrew Champion](https://github.com/aschampion), and [Tom Kazimiers](https://github.com/tomka).
 Developed in collaboration with Brett Graham, [Logan Thomas](https://github.com/Lathomas42), [Rui Zheng](https://github.com/rui14), [Brendan Shanny](https://github.com/brenshanny), [Alex Coda](https://github.com/alexcoda), and David G.C. Hildebrand.
 
