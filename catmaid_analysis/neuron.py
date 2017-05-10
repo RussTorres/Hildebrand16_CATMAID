@@ -85,7 +85,9 @@ class Neuron(object):
         self.skeleton = load_skeleton(skeleton)
 
     def __repr__(self):
-        return "<%s.%s at %s: neuron_id: %s, skeleton_id: %s>" % (self.__module__, self.__class__.__name__, hex(id(self)), self.name, self.skeleton_id)
+        return "<%s.%s at %s: neuron_id: %s, skeleton_id: %s>" % (
+            self.__module__, self.__class__.__name__, hex(id(self)),
+            self.name, self.skeleton_id)
 
     @lazyproperty
     def nodes(self):
@@ -138,10 +140,10 @@ class Neuron(object):
     def leaves(self):
         return algorithms.skeleton.leaves(self)
 
-    @lazyproperty
-    def annotations(self):
-        return algorithms.skeleton.annotation(self.skeleton)
-
+    # TODO annotation support via json api dropped in recent version
+    # @lazyproperty
+    # def annotations(self):
+    #     return algorithms.skeleton.annotation(self.skeleton)
     @lazyproperty
     def bifurcations(self):
         return algorithms.skeleton.bifurcations(self)

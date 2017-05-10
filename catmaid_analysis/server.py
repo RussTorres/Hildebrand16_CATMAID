@@ -52,7 +52,10 @@ class ServerSkeletonSource:
         return skeleton
 
     def get_neuron(self, skeleton_id):
-        return neuron.Neuron(self.get_skeleton(skeleton_id))
+        n = neuron.Neuron(self.get_skeleton(skeleton_id))
+        n.skeleton['id'] = (skeleton_id if n.skeleton_id is None
+                            else n.skeleton_id)
+        return n
 
     def all_neurons_iter(self):
         return (self.get_neuron(sk) for sk in self.get_skeleton_ids())
