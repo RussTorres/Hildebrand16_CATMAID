@@ -110,19 +110,20 @@ def transfer_users(oldusers, cursor):
 
     old_to_new = {}
     for olduid in oldusers.keys():
-        cursor.execute(newrowstring, (oldusers[olduid]['password'],
-                                      (oldusers[olduid]['last_login']
-                                       if oldusers[olduid]['last_login'] != 'None'
-                                       else None),
-                                      oldusers[olduid]['is_super'],
-                                      oldusers[olduid]['username'],
-                                      oldusers[olduid]['first_name'],
-                                      oldusers[olduid]['last_name'],
-                                      oldusers[olduid]['email'],
-                                      oldusers[olduid]['is_staff'],
-                                      oldusers[olduid]['is_active'],
-                                      oldusers[olduid]['date_joined'],
-                                      oldusers[olduid]['username'],))
+        cursor.execute(newrowstring, (
+            oldusers[olduid]['password'],
+            (oldusers[olduid]['last_login']
+             if oldusers[olduid]['last_login'] != 'None'
+             else None),
+            oldusers[olduid]['is_super'],
+            oldusers[olduid]['username'],
+            oldusers[olduid]['first_name'],
+            oldusers[olduid]['last_name'],
+            oldusers[olduid]['email'],
+            oldusers[olduid]['is_staff'],
+            oldusers[olduid]['is_active'],
+            oldusers[olduid]['date_joined'],
+            oldusers[olduid]['username'],))
         newid = cursor.fetchone()
         if newid is not None:
             sqlstring = ('INSERT INTO catmaid_userprofile (user_id, '
@@ -199,7 +200,8 @@ def classinstances(dbclasses, annotations, neuronnames, labels, userid,
             newid = newid[0]
 
         if newid is None:
-            cursor.execute(existingrowstring, (projectid, dbclasses['label'], i, ))
+            cursor.execute(existingrowstring, (
+                projectid, dbclasses['label'], i, ))
             newid = cursor.fetchone()[0]
         labeldict.update({i: newid})
     for i in neuronnames:
@@ -438,17 +440,21 @@ def toggle_triggers(table, cursor, state=True):
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--db_settings_file', required=True,
-    help='json file containing access credentials for target CATMAID database.')
+                    help='json file containing access credentials '
+                    'for target CATMAID database.')
 parser.add_argument('-t', '--target_project_id', required=True,
-    help='CATMAID project id to which reconstructions will be added.')
+                    help='CATMAID project id to which reconstructions '
+                    'will be added.')
 parser.add_argument('-i', '--input_project_json', required=True,
-    help='json file formatted from custom export of CATMAID database.')
+                    help='json file formatted from custom export '
+                    'of CATMAID database.')
 parser.add_argument('-m', '--map_old_new_output', required=False,
-    help='json file to which skeleton id (pkey) old>new will be written.')
+                    help='json file to which skeleton id '
+                    '(pkey) old>new will be written.')
 
 opts = parser.parse_args()
 
-if __name__ === "__main__":
+if __name__ == "__main__":
     db_settings = (opts.db_settings_file if opts.db_settings_file
                    else DEFAULT_db_settings)
     project_id = opts.target_project_id
